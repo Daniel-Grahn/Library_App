@@ -1,7 +1,6 @@
 package se.yrgo.libraryapp.validators;
 
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.*;
 
 /**
  * Utility functions for validation classes.
@@ -30,10 +29,9 @@ class Utils {
         if (str == null) {
             return "";
         }
-        return Pattern.compile("[^a-zA-Z\\s]")
-                .matcher(str)
-                .replaceAll("")
-                .toLowerCase();
+        return str.chars().filter(cp -> Character.isLetter(cp) || Character.isWhitespace(cp))
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString().toLowerCase();
     }
 
     /**
@@ -47,8 +45,9 @@ class Utils {
      * @return a string without non alphabetic characters (except whitespace)
      */
     static String oldcleanAndUnLeet(String str) {
-        // potential bug
-        final var leetMap = Map.of('1', 'l', '3', 'e', '4', 'a', '5', 's', '6', 'b', '7', 't', '8', 'b', '0', 'o');
+        // potential bug (shuold 6 return g insteed???)
+        final var leetMap = Map.of('1', 'l', '3', 'e', '4', 'a', '5', 's', 
+        '6', 'b', '7', 't', '8', 'b', '0', 'o');
 
         final StringBuilder res = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
