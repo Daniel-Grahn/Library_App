@@ -1,0 +1,111 @@
+package se.yrgo.libraryapp.dao;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.h2.jdbcx.JdbcDataSource;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import com.radcortez.flyway.test.annotation.H2;
+
+import se.yrgo.libraryapp.entities.LoginInfo;
+import se.yrgo.libraryapp.entities.User;
+import se.yrgo.libraryapp.entities.UserId;
+
+@Tag("integration")
+@H2
+public class UserDaoIntegrationTest {
+    private static DataSource ds;
+
+    @BeforeAll
+    static void initDataSource() {
+        // this way we do not need to create a new datasource every time
+        final JdbcDataSource ds = new JdbcDataSource();
+        ds.setURL("jdbc:h2:mem:test");
+        UserDaoIntegrationTest.ds = ds;
+    }
+
+    @Test
+    void getUserById() {
+        // this data comes from the test migration files
+        final String username = "test";
+        final UserId userId = UserId.of(1);
+        UserDao userDao = new UserDao(ds);
+        
+        Optional<User> maybeUser = userDao.get(Integer.toString(userId.getId()));
+        
+        assertThat(maybeUser).isPresent();
+        assertThat(maybeUser.get().getName()).isEqualTo(username);
+        assertThat(maybeUser.get().getId()).isEqualTo(userId);
+    }
+    
+    
+    @Test
+    void getNoUserBynoneExecistingId() {
+        final UserId userId = UserId.of("-1");
+        UserDao userDao = new UserDao(ds);
+
+        Optional<User> maybeUser = userDao.get(Integer.toString(userId.getId()));
+        
+        assertThat(maybeUser).isEqualTo(Optional.empty());
+    }
+    
+    @Test
+    void getLoginInfoIfUserExcist() {
+        final UserId userId = UserId.of(1);
+        UserDao userDao = new UserDao(ds);
+        
+        Optional<User> optUser = userDao.get(Integer.toString(userId.getId()));
+        assertThat(optUser).isNotEmpty();
+        User user = optUser.get();
+
+        Optional<LoginInfo> loginInfo = userDao.getLoginInfo(user.getName());
+        assertThat(loginInfo).isNotEmpty();
+    }
+
+    @Test
+    void getNoLoginInfoIfUserDoNotExcist() {
+        UserDao userDao = new UserDao(ds);
+        Optional<LoginInfo> loginInfo = userDao.getLoginInfo("Baba");
+        assertThat(loginInfo).isEmpty();
+    }
+
+
+
+
+    
+    @Test
+    void shouldRegisterAUser() {
+        String name = "Foo";
+        String realname = "Bar";
+        String passwordHash = "YourStrongPassword";
+
+        UserDao userDao = new UserDao(ds);
+
+        boolean result = userDao.register(name, realname, passwordHash);
+        
+        assertThat(result).isTrue();
+    }
+    
+    @Test
+    void isExsistingNameUnavailable() {
+        String name = "test";
+        UserDao userDao = new UserDao(ds);
+
+        assertThat(userDao.isNameAvailable(name)).isFalse();
+    }
+    
+    @Test
+    void isExsistingNameAvailable() {
+        String name = "Foo";
+        UserDao userDao = new UserDao(ds);
+
+        boolean result = userDao.isNameAvailable(name);
+        assertThat(result).isTrue();
+    }
+
+    //test for insertUserAndRole, getGeneratedUserId, addToUserRole (they are private)
+
+}
