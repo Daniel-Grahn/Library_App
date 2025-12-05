@@ -71,10 +71,6 @@ public class UserDaoIntegrationTest {
         Optional<LoginInfo> loginInfo = userDao.getLoginInfo("Baba");
         assertThat(loginInfo).isEmpty();
     }
-
-
-
-
     
     @Test
     void shouldRegisterAUser() {
@@ -87,6 +83,21 @@ public class UserDaoIntegrationTest {
         boolean result = userDao.register(name, realname, passwordHash);
         
         assertThat(result).isTrue();
+    }
+
+    @Test
+    void shouldNotRegisterAUserASecondeTime() {
+        String name = "Foo";
+        String realname = "Bar";
+        String passwordHash = "YourStrongPassword";
+
+        UserDao userDao = new UserDao(ds);
+
+        boolean result = userDao.register(name, realname, passwordHash);
+        assertThat(result).isTrue();
+        
+        result = userDao.register(name, realname, passwordHash);
+        assertThat(result).isFalse();
     }
     
     @Test
