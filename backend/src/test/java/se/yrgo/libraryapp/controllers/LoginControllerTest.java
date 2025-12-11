@@ -1,6 +1,10 @@
 package se.yrgo.libraryapp.controllers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.*;
 import io.jooby.*;
@@ -9,8 +13,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.h2.engine.Session;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.*;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Validate;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -32,37 +35,33 @@ public class LoginControllerTest {
     @Mock
     private SessionDao sessionDao;
 
+    private LoginController controller;
+
     @BeforeEach
     void setUp() {
-        // LoginController loginController = new LoginController(userService, roleDao,
-        // sessionDao);
+        MockitoAnnotations.openMocks(this);
+        controller = new LoginController(userService, roleDao, sessionDao);
     }
 
     @Test
     void shouldGetRolesWhenLogin() {
-        Context context = Mockito.mock(Context.class);
-        String sessionCookie = "abc123";
-        LoginData login = new LoginData("alice", "pwd123");
+        Context ctx = Mockito.mock(Context.class);
 
-        UserId userId = new UserId(1);
+        LoginData login = new LoginData("alice", "pwd");
+        UserId uid = new UserId(1);
+
+        when(userService.validate("alice", "pwd")).thenReturn(Optional.of(uid));
+
         UUID newSession = UUID.randomUUID();
+        when(sessionDao.create(uid)).thenReturn(newSession);
 
-        List<Role> roles = List.of(Role.ADMIN.fromString("admin"));
+        List<Role> roles = List.of(Role.ADMIN);
+        when(roleDao.get(uid)).thenReturn(roles);
 
-        Mockito.when(userService.validate("alice", "pwd123"))
-                .thenReturn(Optional.of(userId));
+        List<Role> result = controller.login(ctx, "badCookie", login);
 
-        Mockito.when(roleDao.get(userId))
-                .thenReturn(roles);
-
-        Mockito.when(sessionDao.create(userId))
-                .thenReturn(newSession);
-
-        LoginController loginController = new LoginController(userService, roleDao, sessionDao);
-        List<Role> result = loginController.login(context, sessionCookie, login);
-
-        assertThat(roles).isEqualTo(result);
-        Mockito.verify(context).setResponseCookie(Mockito.any(Cookie.class));
+        assertThat(result).isEqualTo(roles);
+        verify(ctx).setResponseCookie(any(Cookie.class));
     }
 
     @Test
@@ -73,14 +72,13 @@ public class LoginControllerTest {
 
         List<Role> roles = List.of();
 
-        Mockito.when(userService.validate("alice", "pwd123"))
-                .thenReturn(Optional.empty()); // did not found alice
+        when(sessionDao.validate(any())).thenThrow(IllegalArgumentException.class);
+        when(userService.validate("alice", "pwd123")).thenReturn(Optional.empty());
 
-        LoginController loginController = new LoginController(userService, roleDao, sessionDao);
-        List<Role> result = loginController.login(context, sessionCookie, login);
+        List<Role> result = controller.login(context, sessionCookie, login);
 
-        assertThat(roles).isEqualTo(result);
-        Mockito.verify(context).setResponseCode(StatusCode.UNAUTHORIZED);
+        assertThat(result).isEmpty();
+        verify(context).setResponseCode(StatusCode.UNAUTHORIZED);
     }
 
     @ParameterizedTest

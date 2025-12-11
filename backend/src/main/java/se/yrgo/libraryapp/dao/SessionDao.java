@@ -1,18 +1,12 @@
 package se.yrgo.libraryapp.dao;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.Instant;
+import java.sql.*;
+import java.time.*;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.pac4j.core.exception.CredentialsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 import se.yrgo.libraryapp.entities.UserId;
 
 public class SessionDao {
