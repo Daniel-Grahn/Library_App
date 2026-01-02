@@ -4,14 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.cucumber.java.*;
 import io.cucumber.java.en.*;
 
-import java.net.MalformedURLException;
+import java.net.*;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.net.URL;
+import se.yrgo.integrations.utility.pages.StartPage;
 
 public class GeneralStepDefinitions {
     private static WebDriver driver;
@@ -41,10 +40,11 @@ public class GeneralStepDefinitions {
 
     @Given("the user is on the start page.")
     public void the_user_is_on_the_start_page() {
-        driver.get("http://frontend");
+        StartPage startPage = new StartPage(driver);
+        startPage.moveToStartPage();
+        
         if (!"The Library".equals(driver.getTitle())) {
             throw new IllegalStateException("Not on the start page");
         }
     }
 }
-
