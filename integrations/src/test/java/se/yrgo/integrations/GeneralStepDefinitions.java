@@ -1,5 +1,4 @@
 package se.yrgo.integrations;
-//I do not know why the package lock like this!
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.cucumber.java.*;
@@ -8,6 +7,7 @@ import io.cucumber.java.en.*;
 import java.net.MalformedURLException;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -22,7 +22,8 @@ public class GeneralStepDefinitions {
             ChromeOptions options = new ChromeOptions();
             driver = new RemoteWebDriver(new URL("http://localhost:4444"),
                     options, false);
-        } catch (MalformedURLException e) {
+        } 
+        catch (MalformedURLException e) {
             fail(e);
         }
     }
