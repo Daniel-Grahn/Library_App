@@ -1,10 +1,9 @@
 package se.yrgo.integrations;
 
 import io.cucumber.java.en.*;
-import se.yrgo.integrations.utility.pages.SearchPage;
-import se.yrgo.integrations.utility.pages.StartPage;
+import se.yrgo.integrations.utility.pages.*;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Duration;
 
@@ -32,5 +31,32 @@ public class SearchStepDefinitions {
         SearchPage searchPage = new SearchPage(driver);
 
         assertTrue(searchPage.isSearchFormVisible());
+    }
+
+    @When("the user submits an empty search.")
+    public void the_user_submits_an_empty_search() {
+        SearchPage searchPage = new SearchPage(driver);
+        searchPage.submitSearch();
+    }
+
+    @Then("they see the message {string}.")
+    public void they_see_the_message(String message) {
+        SearchPage searchPage = new SearchPage(driver);
+        String pageMessage = searchPage.getErrorMessage();
+        assertEquals(message, pageMessage);
+    }
+    
+    @When("the user searches for isbn {string}.")
+    public void the_user_searches_for_isbn(String isbn) {
+        SearchPage searchPage = new SearchPage(driver);
+        searchPage.enterIsbn(isbn);
+        searchPage.submitSearch();
+    }
+
+    @Then("they see {string} as the author.")
+    public void they_see_as_the_author(String author) {
+        SearchPage searchPage = new SearchPage(driver);
+        assertTrue(searchPage.isResultsVisible(), "Results should be visible");
+        assertEquals(author, searchPage.getFirstAuthor());
     }
 }
