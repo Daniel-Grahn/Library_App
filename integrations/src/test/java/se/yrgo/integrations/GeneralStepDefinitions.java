@@ -39,6 +39,7 @@ public class GeneralStepDefinitions {
     }
 
     public static WebDriver getDriver() {
+        driver.manage().window().maximize();
         return driver;
     }
 

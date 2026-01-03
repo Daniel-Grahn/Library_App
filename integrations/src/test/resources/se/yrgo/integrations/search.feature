@@ -11,7 +11,7 @@ As a user I want to be able to search for available books so I know what I can l
     When the user submits an empty search.
     Then they see the message "No books found".
 
-  Scenario: Searching for Astrid Lindgren
+  Scenario: Searching for Astrid Lindgrens book
     Given the user is on the search page.
     When the user searches for isbn "9789129697285".
     Then they see "Astrid Lindgren" as the author.
