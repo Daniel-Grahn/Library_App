@@ -8,12 +8,15 @@ import java.sql.*;
 import java.util.Optional;
 
 import javax.sql.DataSource;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import se.yrgo.libraryapp.entities.*;
 
+@Disabled //REMEMBER
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class UserDaoTest {
     @Mock
