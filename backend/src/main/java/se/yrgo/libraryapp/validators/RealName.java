@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.owasp.encoder.Encode;
+
 /**
  * This validator checks that the real names match our high standard for proper
  * names. I.e. no bad
@@ -46,6 +48,13 @@ public final class RealName {
      */
     public static boolean validate(String name) {
         if(name == null){
+            return false;
+        }
+
+        //To stop XSS
+        String safeName = Encode.forHtml(name);
+
+        if(!safeName.equals(name)){
             return false;
         }
 

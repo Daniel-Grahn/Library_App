@@ -30,7 +30,7 @@ public class RoleDao {
         try (Connection conn = ds.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);) {
 
-            stmt.setString(1, sql);
+            stmt.setString(1, userId.toString());
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {

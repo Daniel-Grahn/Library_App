@@ -11,7 +11,7 @@ public class RealNameTest {
     // private static final Set<String> invalidWords = new HashSet<>();
 
     @ParameterizedTest
-    @ValueSource(strings = { "daniel", "lkvlsmvlksv", ""})
+    @ValueSource(strings = { "daniel", "lkvlsmvlksv", "", "Hele`n"})
     void validatesGodName(String name) {
         Boolean valid = RealName.validate(name);
         assertThat(valid).isTrue();
@@ -25,6 +25,7 @@ public class RealNameTest {
             "HECK",
             "H3CK",
             "shiet",
+            "Nisse<img src=\"https://placehold.co/1x1\" onload=\"alert(`You have been hacked`)\">"
              })
     @NullSource
     void validatesBadName(String name) {
