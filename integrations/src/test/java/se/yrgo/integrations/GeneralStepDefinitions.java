@@ -64,4 +64,9 @@ public class GeneralStepDefinitions {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.urlContains("/search"));
     }
+
+    @Given("an {string} is logged in.")
+    public void an_is_logged_in(String role) {
+        
+    }
 }
